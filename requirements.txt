@@ -1,0 +1,24 @@
+# Backend Framework
+fastapi
+uvicorn
+
+# ML & NLP
+scikit-learn
+numpy
+pandas
+
+# TF-IDF
+scipy
+
+# Sentiment Analysis
+transformers
+torch
+
+# Semantic Embeddings
+sentence-transformers
+
+# Vector Database
+faiss-cpu
+
+# Utilities
+python-dotenv
