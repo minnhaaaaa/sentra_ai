@@ -32,32 +32,49 @@ export default function ResultPage() {
       return
     }
     setTicketText(ticket)
-    // Call backend API to get category classification
+    // Call backend APIs to get category classification and sentiment analysis
     ;(async () => {
       try {
         const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000")
-        const resp = await fetch(`${API_URL}/predict`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: ticket }),
-        })
-        if (!resp.ok) throw new Error(`API error ${resp.status}`)
-        const data = await resp.json()
-        // Keep other simulated insights, but use real category from backend
+        
+        // Make both API calls in parallel
+        const [predictResp, sentimentResp] = await Promise.all([
+          fetch(`${API_URL}/predict`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: ticket }),
+          }),
+          fetch(`${API_URL}/sentiment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: ticket }),
+          })
+        ])
+        
+        if (!predictResp.ok) throw new Error(`Predict API error ${predictResp.status}`)
+        if (!sentimentResp.ok) throw new Error(`Sentiment API error ${sentimentResp.status}`)
+        
+        const predictData = await predictResp.json()
+        const sentimentData = await sentimentResp.json()
+        
+        // Determine sentiment label from API response
+        const sentimentLabel = sentimentData.sentiment === "positive" ? "Positive" : 
+                              sentimentData.sentiment === "negative" ? "Negative" : "Neutral"
+        
         setResults({
           churnRisk: {
-            probability: 0.72,
-            label: "High",
+            probability: predictData.churn_probability ?? 0,
+            label: predictData.churn_label ?? "Low",
           },
           sentiment: {
-            score: 0.35,
-            label: "Negative",
+            score: sentimentData.positive_score,
+            label: sentimentLabel,
           },
-          category: data.category || "Unknown",
+          category: predictData.category || "Unknown",
           priority: "High",
         })
       } catch (err) {
-        console.error("Prediction error:", err)
+        console.error("API error:", err)
         setResults({
           churnRisk: {
             probability: 0.0,

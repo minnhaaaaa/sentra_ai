@@ -10,6 +10,8 @@ class PredictResponse(BaseModel):
     category: str
     label: Optional[str] = None
     probabilities: Dict[str, float]
+    churn_probability: Optional[float] = None
+    churn_label: Optional[str] = None
 
 
 class TrainExample(BaseModel):
@@ -24,3 +26,23 @@ class TrainRequest(BaseModel):
 class TrainResponse(BaseModel):
     success: bool
     trained_on: int
+
+
+class SentimentRequest(BaseModel):
+    text: str
+
+
+class SentimentResponse(BaseModel):
+    text: str
+    sentiment: str
+    confidence: float
+    positive_score: float
+    negative_score: float
+
+
+class BatchSentimentRequest(BaseModel):
+    texts: List[str]
+
+
+class BatchSentimentResponse(BaseModel):
+    results: List[SentimentResponse]
