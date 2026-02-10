@@ -14,28 +14,6 @@ import Image from "next/image"
 import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern"
 import { SmoothCursor } from "@/components/ui/smooth-cursor"
 
-const comparisonPoints = [
-  {
-    title: "Churn Prediction",
-    description: "AI-powered algorithms predict customer churn risk based on support ticket sentiment and content patterns.",
-    icon: "📊",
-  },
-  {
-    title: "Sentiment Analysis",
-    description: "Real-time sentiment detection to understand customer emotions and satisfaction levels instantly.",
-    icon: "😊",
-  },
-  {
-    title: "AI Insights",
-    description: "Advanced ML models provide actionable insights and recommendations to reduce customer churn.",
-    icon: "🧠",
-  },
-  {
-    title: "Seamless Insights",
-    description: "Seamlessly integrate with your existing support systems for effortless ticket analysis.",
-    icon: "⚡",
-  },
-]
 
 export default function Home() {
   const [ticketText, setTicketText] = useState("")
@@ -153,41 +131,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 3: How We Are Different */}
-      <section className="relative w-full py-20 px-4 bg-black border-t border-gray-800 overflow-hidden">
-        <div className="absolute inset-0 w-full">
-          <InteractiveGridPattern
-            className="w-full h-full opacity-20"
-            dots="rgb(59, 130, 246)"
-            lines="rgb(30, 80, 200)"
-          />
-        </div>
-        <div className="relative z-10 max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-4 text-white">
-            How We Are Different
-          </h2>
-          <p className="text-center text-gray-400 mb-12">
-            Sentra AI stands out with powerful AI-driven features designed for modern support teams.
-          </p>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {comparisonPoints.map((point, index) => (
-              <div
-                key={index}
-                className="group relative p-6 rounded-lg border border-gray-800 bg-gray-900 hover:border-blue-600 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer"
-              >
-                <div className="text-4xl mb-4">{point.icon}</div>
-                <h3 className="text-xl font-semibold mb-3 text-white group-hover:text-blue-400 transition-colors">
-                  {point.title}
-                </h3>
-                <p className="text-gray-400 group-hover:text-gray-300 transition-colors text-sm leading-relaxed">
-                  {point.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* Footer */}
       <section className="w-full py-12 px-4 bg-black border-t border-gray-800">
