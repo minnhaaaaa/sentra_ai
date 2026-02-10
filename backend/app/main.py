@@ -92,10 +92,11 @@ def predict(request: PredictRequest):
         result = classifier.predict(text)
         logger.info(f"Predicted: '{text[:50]}...' -> {result['category']}")
 
+        lowered = text.lower()
+        
         # --- Convert sentiment, category and keywords into churn risk ---
         # Keyword churn intent signals
         keywords = ["cancel", "refund", "unsubscribe", "close account", "switch", "terminate"]
-        lowered = text.lower()
         matches = 0
         for kw in keywords:
             if kw in lowered:
@@ -148,6 +149,7 @@ def predict(request: PredictRequest):
             "support delay": 0.5,
             "feature request": 0.2,
             "general inquiry": 0.1,
+            "other": 0.2,  # Low priority for unclassifiable/low-confidence text
             # map common labels from the classifier to sensible defaults
             "refund request": 1.0,
             "service complaint": 0.6,
@@ -157,13 +159,15 @@ def predict(request: PredictRequest):
         category_signal = category_map.get(cat, 0.1)
 
         # --- Post-process category overrides based on strong keywords ---
+        # ONLY override non-"Other" categories. If classifier says "Other" (low confidence),
+        # respect that and don't force it to a category.
         TECH_KEYWORDS = [
             "stuck", "freeze", "freezing", "crash", "crashes", "crashing",
             "not working", "keeps getting stuck", "keep getting stuck", "app", "phone",
             "mobile", "unresponsive", "hang", "hangs",
         ]
-        if any(k in lowered for k in TECH_KEYWORDS):
-            # If text contains clear technical issue signals, prefer Technical category
+        if cat != "other" and any(k in lowered for k in TECH_KEYWORDS):
+            # Only override to Technical if classifier didn't already say "Other"
             if cat != "technical":
                 logger.info("Overriding category to Technical based on keywords")
             cat = "technical"
@@ -237,7 +241,7 @@ def predict(request: PredictRequest):
             priority_label = "P3 – Medium"
         else:
             priority_label = "P4 – Low"
-            
+
         if sentiment_data is not None and sentiment_data.get("sentiment") == "positive":
             priority_score = 0.0
             priority_label = "P4 – Low"
